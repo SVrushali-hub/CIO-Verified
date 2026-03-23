@@ -8,7 +8,7 @@ import fileRoutes from "./routes/fileRoutes.js";
 import { initDatabase } from "./config/initDb.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
-
+import adminPermissionRoutes from "./routes/adminPermissionRoutes.js";
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -24,6 +24,8 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api", adminPermissionRoutes);
+
 
 // Test route
 app.get("/", (req, res) => {

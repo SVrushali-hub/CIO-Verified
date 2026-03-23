@@ -2,8 +2,7 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
-  useLocation
+  Navigate
 } from "react-router-dom";
 
 import Register from "./pages/Register";
@@ -23,9 +22,11 @@ import ApplicationDetails from "./pages/Internal/operations/ApplicationDetails";
 import SuperAdminDashboard from "./pages/Internal/superadmin/SuperAdminDashboard";
 import CreateUser from "./pages/Internal/superadmin/CreateUser";
 import UserList from "./pages/Internal/superadmin/UserList";
+import ManagePermissions from "./pages/Internal/superadmin/ManagePermissions"; // ✅ NEW
 
 import InternalLayout from "./components/InternalLayout";
 import AdminDashboard from "./pages/Internal/admin/AdminDashboard";
+import ProfileSetup from "./pages/Internal/profile/ProfileSetup";
 
 /* ========================= */
 function AppContent() {
@@ -34,6 +35,7 @@ function AppContent() {
       <Navbar />
 
       <Routes>
+
         {/* PUBLIC */}
         <Route path="/" element={<Navigate to="/register" />} />
         <Route path="/register" element={<Register />} />
@@ -62,7 +64,8 @@ function AppContent() {
         {/* INTERNAL LOGIN */}
         <Route path="/internal-login" element={<InternalLogin />} />
 
-        {/* SUPERADMIN */}
+        {/* ================= SUPER ADMIN ================= */}
+
         <Route
           path="/internal/superadmin"
           element={
@@ -96,7 +99,20 @@ function AppContent() {
           }
         />
 
-        {/* OPERATIONS */}
+        {/* ✅ NEW: MANAGE PERMISSIONS */}
+        <Route
+          path="/internal/superadmin/manage-permissions"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <InternalLayout>
+                <ManagePermissions />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ================= OPERATIONS ================= */}
+
         <Route
           path="/internal/operations"
           element={
@@ -129,6 +145,9 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
+        {/* ================= ADMIN ================= */}
+
         <Route
           path="/internal/admin"
           element={
@@ -139,6 +158,26 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
+        {/* ================= PROFILE SETUP ================= */}
+
+        <Route
+          path="/internal/profile-setup"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN", "ADMIN", "OPERATIONS"]}>
+              <ProfileSetup />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ❌ REMOVED OLD USER PERMISSIONS ROUTE (OPTIONAL) */}
+        {/* 
+        <Route
+          path="/internal/superadmin/permissions/:id"
+          element={<UserPermissions />}
+        /> 
+        */}
+
       </Routes>
     </>
   );

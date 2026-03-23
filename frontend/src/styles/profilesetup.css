@@ -44,6 +44,15 @@
   border: 1px solid #ccc;
 }
 
+#verify-btn {
+  width: 100px;
+  height: 45px;
+  background: linear-gradient(90deg, #e85d00, #ffb703);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
 /* Password field */
 .password-field {
   position: relative;
@@ -102,6 +111,59 @@
   border: 1px solid #ddd;
   padding: 0 10px;
   margin-bottom: 8px;
+}
+
+.login-card input:focus {
+  border-color: #ff7a00;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.1);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+/* Email row */
+.email-row {
+  display: flex;
+  gap: 10px;
+}
+
+#verify-btn {
+  width: auto;
+  padding: 0 16px;
+  height: 42px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e85d00, #ffb703);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* OTP section */
+.otp-section {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Verified badge */
+.verified-badge {
+  margin-top: 8px;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Input improvements */
+.login-card input {
+  height: 42px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 0 10px;
 }
 
 .login-card input:focus {

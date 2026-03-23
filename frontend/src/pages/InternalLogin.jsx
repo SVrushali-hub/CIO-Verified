@@ -13,26 +13,40 @@ export default function InternalLogin() {
 
       const data = await internalLogin({
         ...form,
-        isInternal: true, // 🔥 important
+        isInternal: true,
       });
 
-      // ✅ store token + user
+      // ✅ store token
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // ✅ store user + profile flag
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...data.user,
+          isProfileComplete: data.isProfileComplete,
+        })
+      );
+
+      // 🔥 FORCE PROFILE COMPLETION
+      if (!data.isProfileComplete) {
+        navigate("/internal/profile-setup");
+        return;
+      }
 
       // 🔀 role-based redirect
       switch (data.user.role) {
         case "SUPERADMIN":
-  navigate("/internal/superadmin");
-  break;
+          navigate("/internal/superadmin");
+          break;
 
-case "ADMIN":
-  navigate("/internal/admin");
-  break;
+        case "ADMIN":
+          navigate("/internal/admin");
+          break;
 
-case "OPERATIONS":
-  navigate("/internal/operations");
-  break;
+        case "OPERATIONS":
+          navigate("/internal/operations");
+          break;
 
         default:
           navigate("/internal-login");
@@ -45,5 +59,7 @@ case "OPERATIONS":
     }
   };
 
-  return <InternalLoginForm onSubmit={handleLogin} loading={loading} />;
+  return (
+    <InternalLoginForm onSubmit={handleLogin} loading={loading} />
+  );
 }

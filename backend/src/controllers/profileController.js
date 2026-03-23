@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import { sendOTP } from "../utils/mailer.js";
 
 /* =========================
    GET PROFILE
@@ -13,6 +14,7 @@ export const getProfile = async (req, res) => {
         u.username,
         u.email,
         u.role,
+        u.is_verified,
         i.full_name,
         i.phone,
         i.department,
@@ -35,28 +37,16 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { full_name, phone, department, email, designation } = req.body;
 
-    // 🔐 update email (users table)
-    if (email) {
-      const [existing] = await db.query(
-        "SELECT id FROM users WHERE email = ? AND id != ?",
-        [email, userId]
-      );
-
-      if (existing.length > 0) {
-        return res.status(400).json({
-          message: "Email already in use",
-        });
-      }
-
-      await db.query(
-        "UPDATE users SET email = ? WHERE id = ?",
-        [email, userId]
-      );
+    // 🔒 BLOCK email update completely
+    if (req.body.email) {
+      return res.status(400).json({
+        message: "Email cannot be changed after verification",
+      });
     }
 
-    // 🔐 insert/update internal profile
+    const { full_name, phone, department, designation } = req.body;
+
     await db.query(`
       INSERT INTO internal_users (user_id, full_name, phone, department, designation)
       VALUES (?, ?, ?, ?, ?)
@@ -73,30 +63,106 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 /* =========================
-   SEND OTP (FOR PASSWORD RESET)
+   SEND EMAIL OTP
 ========================= */
-export const sendResetOtp = async (req, res) => {
+export const sendEmailOtp = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { email } = req.body;
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+    const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
     await db.query(
       "UPDATE users SET otp = ?, otp_expiry = ? WHERE id = ?",
       [otp, expiry, userId]
     );
 
-    console.log("OTP:", otp); // 🔥 later replace with email
+    await sendOTP(email, otp, "verify");
 
-    res.json({ message: "OTP sent successfully" });
+    res.json({ message: "OTP sent to email" });
 
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
+/* =========================
+   VERIFY EMAIL OTP
+========================= */
+export const verifyEmailOtp = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { email, otp } = req.body;
+
+    const [users] = await db.query(
+      "SELECT * FROM users WHERE id = ?",
+      [userId]
+    );
+
+    const user = users[0];
+
+    if (
+      user.otp !== otp ||
+      new Date() > new Date(user.otp_expiry)
+    ) {
+      return res.status(400).json({
+        message: "Invalid or expired OTP",
+      });
+    }
+
+    await db.query(
+      "UPDATE users SET email = ?, is_verified = 1, otp = NULL, otp_expiry = NULL WHERE id = ?",
+      [email, userId]
+    );
+
+    res.json({ message: "Email verified successfully" });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================
+   SEND OTP (PASSWORD RESET)
+========================= */
+export const sendResetOtp = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // get user's email
+    const [users] = await db.query(
+      "SELECT email FROM users WHERE id = ?",
+      [userId]
+    );
+
+    const email = users[0]?.email;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email not found. Please verify email first.",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 5 * 60 * 1000);
+
+    await db.query(
+      "UPDATE users SET otp = ?, otp_expiry = ? WHERE id = ?",
+      [otp, expiry, userId]
+    );
+
+    // ✅ SEND REAL EMAIL
+    await sendOTP(email, otp, "reset");
+
+    res.json({ message: "OTP sent to your email" });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 /* =========================
    VERIFY OTP + RESET PASSWORD

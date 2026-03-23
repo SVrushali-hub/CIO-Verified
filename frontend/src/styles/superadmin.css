@@ -50,3 +50,447 @@
 .actions button {
   margin-left: 10px;
 }
+.sa-container {
+  padding: 30px;
+}
+
+/* Table wrapper */
+.table-wrapper {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* Table */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header */
+.user-table thead {
+  background: #f4f6f9;
+}
+
+.user-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Rows */
+.user-table td {
+  padding: 14px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* Status badge */
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status.active {
+  background: #e6f7ee;
+  color: #28a745;
+}
+
+.status.inactive {
+  background: #fdecea;
+  color: #dc3545;
+}
+
+/* Buttons */
+.action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.action-btn.activate {
+  background: #28a745;
+  color: white;
+}
+
+.action-btn.deactivate {
+  background: #dc3545;
+  color: white;
+}
+
+/* Hover */
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+.group-badge {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 4px 8px;
+  margin: 2px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.action-btn.manage {
+  background: #6c63ff;
+  color: white;
+  margin-left: 8px;
+}
+.permissions-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  max-width: 500px;
+}
+
+/* 🔥 Proper row layout */
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Hover effect */
+.perm-row:hover {
+  background: #f5f7fa;
+}
+
+/* Checkbox */
+.perm-row input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Text */
+.perm-name {
+  font-size: 14px;
+  color: #333;
+}
+/* Container */
+.perm-container {
+  padding: 20px;
+}
+
+/* Grid */
+.perm-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.perm-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.perm-header h3 {
+  margin: 0;
+}
+
+.perm-header p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.role-badge {
+  background: #007bff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Sections */
+.perm-section {
+  margin-top: 15px;
+}
+
+.group-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group-badge {
+  background: #eee;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Permissions Grid */
+.perm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.perm-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Button */
+.save-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #ff6600;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background: #e65c00;
+}
+/* Container */
+.perm-container {
+  padding: 20px;
+}
+
+/* Grid Layout */
+.perm-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.perm-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: 0.2s ease;
+}
+
+.perm-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Header */
+.perm-header h3 {
+  margin: 0;
+}
+
+.perm-header p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.role-badge {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* Sections */
+.perm-section {
+  margin-top: 15px;
+}
+
+.perm-section h4 {
+  margin-bottom: 10px;
+}
+
+/* Groups */
+.group-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group-badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.no-group {
+  color: #888;
+  font-size: 13px;
+}
+
+/* Permissions */
+.perm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.perm-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.perm-label {
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  width: 42px;
+  height: 22px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.3s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background-color: #ff6600;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Button */
+.save-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #ff6600;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.save-btn:hover {
+  background: #e65c00;
+}
+/* Table Container */
+.table-container {
+  padding: 20px;
+}
+
+/* Table */
+.perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Header */
+.perm-table th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+/* Rows */
+.perm-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Hover */
+.perm-table tr:hover {
+  background: #fafafa;
+}
+
+/* User Cell */
+.user-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-badge {
+  font-size: 11px;
+  background: #2563eb;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+/* Groups */
+.group-badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+/* Permission Cells */
+.perm-cell {
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.perm-cell:hover {
+  background: #ffe5d0;
+  transform: scale(1.1);
+}
+
+/* No group */
+.no-group {
+  color: #999;
+}

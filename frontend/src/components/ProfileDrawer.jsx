@@ -3,7 +3,6 @@ import API from "../services/api";
 import "../styles/drawer.css";
 
 export default function ProfileDrawer({ onClose }) {
-  /* ================= PROFILE STATE ================= */
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -14,17 +13,20 @@ export default function ProfileDrawer({ onClose }) {
 
   const [loading, setLoading] = useState(false);
 
-  /* ================= PASSWORD STATE ================= */
+  /* PASSWORD STATES */
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loadingOtp, setLoadingOtp] = useState(false);
 
-  /* ================= FETCH PROFILE ================= */
+  /* 🔥 NEW: TIMER */
+  const [timer, setTimer] = useState(0);
+
   useEffect(() => {
     fetchProfile();
   }, []);
 
+  /* FETCH PROFILE */
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
@@ -34,19 +36,14 @@ export default function ProfileDrawer({ onClose }) {
     }
   };
 
-  /* ================= HANDLE INPUT ================= */
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  /* ================= SAVE PROFILE ================= */
+  /* SAVE PROFILE */
   const saveProfile = async () => {
     try {
       setLoading(true);
-      await API.put("/profile", form);
+
+      const { email, ...rest } = form;
+      await API.put("/profile", rest);
+
       alert("Profile updated");
     } catch {
       alert("Error updating profile");
@@ -55,13 +52,18 @@ export default function ProfileDrawer({ onClose }) {
     }
   };
 
-  /* ================= SEND OTP ================= */
+  /* SEND OTP */
   const sendOtp = async () => {
     try {
       setLoadingOtp(true);
+
       await API.post("/profile/send-otp");
-      alert("OTP sent (check email/console)");
+
+      alert("OTP sent to your email");
+
       setStep(2);
+      setTimer(30); // 🔥 START TIMER
+
     } catch {
       alert("Failed to send OTP");
     } finally {
@@ -69,7 +71,18 @@ export default function ProfileDrawer({ onClose }) {
     }
   };
 
-  /* ================= RESET PASSWORD ================= */
+  /* 🔥 TIMER EFFECT */
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
+
+  /* RESET PASSWORD */
   const resetPassword = async () => {
     try {
       await API.post("/profile/verify-otp", {
@@ -77,25 +90,25 @@ export default function ProfileDrawer({ onClose }) {
         newPassword,
       });
 
-      alert("Password updated successfully");
+      alert("Password updated");
 
       setStep(1);
       setOtp("");
       setNewPassword("");
+      setTimer(0);
+
     } catch {
-      alert("Invalid OTP or error");
+      alert("Invalid OTP");
     }
   };
 
-  /* ================= UI ================= */
   return (
     <div className="profile-container">
-      {/* 🔙 BACK */}
       <button className="back-btn" onClick={onClose}>
         ← Back
       </button>
 
-      {/* 👤 HEADER */}
+      {/* HEADER */}
       <div className="profile-header">
         <div className="profile-avatar">
           {form.full_name?.charAt(0)?.toUpperCase() || "U"}
@@ -103,73 +116,59 @@ export default function ProfileDrawer({ onClose }) {
 
         <div>
           <h3>{form.full_name || "Your Name"}</h3>
-          <p>{form.email || "No email added"}</p>
+          <p>{form.email}</p>
         </div>
       </div>
 
-      {/* ================= PROFILE CARD ================= */}
+      {/* PROFILE CARD */}
       <div className="profile-card">
         <h4>Profile Information</h4>
 
         <div className="form-group">
           <label>Full Name</label>
-          <input
-            name="full_name"
-            value={form.full_name || ""}
-            onChange={handleChange}
-          />
+          <input value={form.full_name || ""} disabled />
         </div>
 
         <div className="form-group">
           <label>Email</label>
-          <input
-            name="email"
-            value={form.email || ""}
-            onChange={handleChange}
-          />
+          <input value={form.email || ""} disabled />
+          <p style={{ fontSize: "12px", color: "#28a745" }}>
+            🔒 Verified & cannot be changed
+          </p>
         </div>
 
         <div className="form-group">
           <label>Phone</label>
-          <input
-            name="phone"
-            value={form.phone || ""}
-            onChange={handleChange}
-          />
+          <input value={form.phone || ""} disabled />
         </div>
 
         <div className="form-group">
           <label>Department</label>
-          <input
-            name="department"
-            value={form.department || ""}
-            onChange={handleChange}
-          />
+          <input value={form.department || ""} disabled />
         </div>
+
         <div className="form-group">
-  <label>Designation</label>
-  <input
-    name="designation"
-    value={form.designation || ""}
-    onChange={handleChange}
-  />
-</div>
+          <label>Designation</label>
+          <input value={form.designation || ""} disabled />
+        </div>
 
         <button onClick={saveProfile} disabled={loading}>
           {loading ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
-      {/* ================= PASSWORD CARD ================= */}
+      {/* PASSWORD CARD */}
       <div className="profile-card">
         <h4>Change Password</h4>
 
+        {/* STEP 1 */}
         {step === 1 && (
           <button onClick={sendOtp} disabled={loadingOtp}>
             {loadingOtp ? "Sending..." : "Send OTP"}
           </button>
         )}
 
+        {/* STEP 2 */}
         {step === 2 && (
           <>
             <div className="form-group">
@@ -191,6 +190,23 @@ export default function ProfileDrawer({ onClose }) {
 
             <button onClick={resetPassword}>
               Reset Password
+            </button>
+
+            {/* 🔥 RESEND BUTTON */}
+            <button
+              type="button"
+              onClick={sendOtp}
+              disabled={timer > 0}
+              style={{
+                marginTop: "10px",
+                background: "transparent",
+                border: "none",
+                color: "#ff7a00",
+                cursor: timer > 0 ? "not-allowed" : "pointer",
+                fontSize: "13px",
+              }}
+            >
+              {timer > 0 ? `Resend in ${timer}s` : "Resend OTP"}
             </button>
           </>
         )}

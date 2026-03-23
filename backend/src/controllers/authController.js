@@ -64,20 +64,28 @@ export const register = async (req, res) => {
 };
 
 /* =========================
-   LOGIN (FINAL VERSION)
+   LOGIN (FIXED VERSION)
 ========================= */
 export const login = async (req, res) => {
   try {
-    const { identifier, password, isInternal } = req.body;
+    let { identifier, email, password, isInternal } = req.body;
 
-    // 🔹 Normalize input
-    const cleanIdentifier = identifier.trim().toLowerCase();
+    // 🔹 Use either identifier or email
+    const cleanIdentifier = (identifier || email || "").trim().toLowerCase();
 
-    // 🔍 Find user by username OR email
+    if (!cleanIdentifier) {
+      return res.status(400).json({ message: "Email or username is required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
+    // 🔍 Find user by email (or username if needed)
     const [users] = await db.query(
-      "SELECT * FROM users WHERE username = ? OR email = ?",
-      [cleanIdentifier, cleanIdentifier]
-    );
+  "SELECT * FROM users WHERE email = ? OR username = ?",
+  [cleanIdentifier, cleanIdentifier]
+);
 
     if (users.length === 0) {
       return res.status(400).json({ message: "User not found" });
@@ -85,23 +93,18 @@ export const login = async (req, res) => {
 
     const user = users[0];
 
-    const internalRoles = ["SUPERADMIN", "ADMIN", "OPERATIONS"];
+    const internalRoles = ["SUPERADMIN", "ADMIN"];
 
     /* =========================
        ACCESS CONTROL
     ========================= */
-
-    // 🔐 Internal login
     if (isInternal) {
       if (!internalRoles.includes(user.role)) {
         return res.status(403).json({
           message: "Access denied: Not an internal team member",
         });
       }
-    }
-
-    // 🧾 Company login
-    else {
+    } else {
       if (user.role !== "APPLICANT") {
         return res.status(403).json({
           message: "Please login via correct portal",
@@ -117,18 +120,6 @@ export const login = async (req, res) => {
         message: "Please verify your email first",
       });
     }
-
-    /* =========================
-       OPTIONAL: INTERNAL EMAIL VERIFICATION
-       (Enable later if needed)
-    ========================= */
-    /*
-    if (user.role !== "APPLICANT" && user.email && !user.is_verified) {
-      return res.status(403).json({
-        message: "Please verify your email",
-      });
-    }
-    */
 
     /* =========================
        ACCOUNT ACTIVE CHECK
@@ -158,15 +149,29 @@ export const login = async (req, res) => {
     );
 
     /* =========================
+   PROFILE COMPLETION CHECK
+========================= */
+const [profile] = await db.query(
+  "SELECT full_name FROM internal_users WHERE user_id = ?",
+  [user.id]
+);
+
+let isProfileComplete = false;
+
+if (profile.length > 0 && profile[0].full_name) {
+  isProfileComplete = true;
+}
+    /* =========================
        SAFE USER RESPONSE
     ========================= */
     const { password: _, otp, otp_expiry, ...safeUser } = user;
 
-    return res.json({
-      token,
-      user: safeUser,
-      forcePasswordChange: user.is_temp_password || false
-    });
+    return  res.json({
+  token,
+  user: safeUser,
+  forcePasswordChange: user.is_temp_password || false,
+  isProfileComplete // ✅ NEW
+});
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);

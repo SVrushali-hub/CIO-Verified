@@ -1,0 +1,122 @@
+/* Container */
+.cu-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Heading */
+.cu-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Form */
+.cu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Input */
+.cu-input {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: auto;
+}
+
+/* Auto checkbox */
+.cu-auto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* Group section */
+.cu-groups {
+  margin-top: 10px;
+}
+
+.cu-groups h4 {
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* Checkbox row */
+.cu-group-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px;
+  border-radius: 6px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.cu-group-item:hover {
+  background: #f5f7fa;
+}
+
+/* Checkbox */
+.cu-group-item input {
+  width: 16px;
+  height: 16px;
+}
+
+/* Button */
+.cu-btn {
+  margin-top: 15px;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cu-btn:hover {
+  background: #0056b3;
+}
+
+/* Disabled button */
+.cu-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Credentials box */
+.cu-credentials {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f4f6f8;
+  border-radius: 8px;
+}
+
+.cu-credentials h3 {
+  margin-bottom: 10px;
+}
+
+.cu-credentials p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+/* Auto generate section */
+.cu-auto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.cu-auto input {
+  width: 16px;
+  height: 16px;
+}
