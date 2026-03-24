@@ -535,41 +535,186 @@ await db.query(`
     // ================= SEED AUTH GROUPS =================
     await db.query(`
       INSERT IGNORE INTO auth_groups (name, description) VALUES
-      ('Finance', 'Handles invoices and payments'),
-      ('Operations', 'Assigns auditors and reviewers'),
-      ('Verification', 'Verifies companies'),
-      ('Support', 'Handles support tickets'),
-      ('Analytics', 'Views reports'),
-      ('Supervision', 'Manages users');
+
+('Application Operations', 'Handles application flow, assignment, and certification process'),
+
+('Assessor Management', 'Handles auditor/reviewer onboarding, approval, and credential issuance'),
+
+('Finance', 'Handles invoice generation, payments, and financial tracking'),
+
+('Reporting', 'Provides access to reports and analytics');
     `);
 
     // ================= SEED PERMISSIONS =================
     await db.query(`
       INSERT IGNORE INTO permissions (name) VALUES
-      ('generate_invoice'),
-      ('view_reports'),
-      ('assign_auditor'),
-      ('assign_reviewer'),
-      ('verify_company'),
-      ('manage_users');
+
+-- Application
+('view_applications'),
+('verify_company_data'),
+
+-- Assignment
+('assign_auditor'),
+('assign_reviewer'),
+
+-- Evaluation
+('evaluate_review_scores'),
+('send_certification_result'),
+
+-- Assessor
+('invite_auditor'),
+('invite_reviewer'),
+('review_assessor_application'),
+('approve_assessor_admin'),
+('reject_assessor_admin'),
+('approve_assessor_superadmin'),
+('send_assessor_credentials'),
+
+-- Finance
+('generate_invoice'),
+('send_invoice'),
+('mark_payment_paid'),
+('verify_payment'),
+
+-- Reporting
+('view_reports'),
+('view_analytics');
     `);
 
     // ================= MAP GROUP → PERMISSIONS =================
     await db.query(`
       INSERT IGNORE INTO auth_group_permissions (group_id, permission_id)
-      SELECT ag.id, p.id FROM auth_groups ag, permissions p
-      WHERE 
-        (ag.name = 'Finance' AND p.name IN ('generate_invoice','view_reports'))
-        OR
-        (ag.name = 'Operations' AND p.name IN ('assign_auditor','assign_reviewer'))
-        OR
-        (ag.name = 'Verification' AND p.name = 'verify_company')
-        OR
-        (ag.name = 'Analytics' AND p.name = 'view_reports')
-        OR
-        (ag.name = 'Supervision' AND p.name = 'manage_users');
+SELECT g.id, p.id
+FROM auth_groups g, permissions p
+WHERE g.name = 'Application Operations'
+AND p.name IN (
+  'view_applications',
+  'verify_company_data',
+  'assign_auditor',
+  'assign_reviewer',
+  'evaluate_review_scores',
+  'send_certification_result'
+);
     `);
 
+    await db.query(`
+      INSERT IGNORE INTO auth_group_permissions (group_id, permission_id)
+SELECT g.id, p.id
+FROM auth_groups g, permissions p
+WHERE g.name = 'Assessor Management'
+AND p.name IN (
+  'invite_auditor',
+  'invite_reviewer',
+  'review_assessor_application',
+  'approve_assessor_admin',
+  'reject_assessor_admin',
+  'send_assessor_credentials'
+);
+    `);
+
+    await db.query(`
+      INSERT IGNORE INTO auth_group_permissions (group_id, permission_id)
+SELECT g.id, p.id
+FROM auth_groups g, permissions p
+WHERE g.name = 'Finance'
+AND p.name IN (
+  'generate_invoice',
+  'send_invoice',
+  'mark_payment_paid',
+  'verify_payment'
+);
+    `);
+
+    await db.query(`
+      INSERT IGNORE INTO auth_group_permissions (group_id, permission_id)
+SELECT g.id, p.id
+FROM auth_groups g, permissions p
+WHERE g.name = 'Reporting'
+AND p.name IN (
+  'view_reports',
+  'view_analytics'
+);
+    `);
+
+    // ================= Assessor Profiles Temp =================
+    await db.query(`CREATE TABLE IF NOT EXISTS assessor_profiles_temp (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  invitation_id INT NOT NULL,
+
+  full_name VARCHAR(255),
+  phone VARCHAR(20),
+  experience_years INT,
+  specialization TEXT,
+  address TEXT,
+
+  type ENUM('individual','company'),
+
+  company_name VARCHAR(255),
+  gstin VARCHAR(50),
+  years_in_operation INT,
+
+  resume LONGBLOB,
+  company_profile LONGBLOB,
+
+  status ENUM(
+    'SUBMITTED',
+    'ADMIN_APPROVED',
+    'ADMIN_REJECTED',
+    'SUPERADMIN_APPROVED',
+    'SUPERADMIN_REJECTED'
+  ) DEFAULT 'SUBMITTED',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (invitation_id)
+    REFERENCES assessor_invitations(id)
+    ON DELETE CASCADE
+);
+`);
+// ================= APPLICATION ASSESSMENT=================
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS application_assignments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  user_id INT NOT NULL,
+  application_id INT NOT NULL,
+  
+  role ENUM('auditor', 'reviewer') NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  -- Foreign Keys (recommended)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+);
+    `);
+
+    //================= ASSESSOR INVITATIONS =================
+    await db.query(`CREATE TABLE IF NOT EXISTS assessor_invitations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  email VARCHAR(255) NOT NULL,
+  role ENUM('AUDITOR', 'REVIEWER') NOT NULL,
+
+  invited_by_admin_id INT NOT NULL,
+
+  token VARCHAR(255) NOT NULL UNIQUE,
+
+  status ENUM('PENDING', 'FILLED', 'ADMIN_APPROVED', 'ADMIN_REJECTED', 'SUPERADMIN_APPROVED', 'SUPERADMIN_REJECTED')
+    DEFAULT 'PENDING',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  -- 🔗 FK to users table
+  CONSTRAINT fk_invited_admin
+    FOREIGN KEY (invited_by_admin_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+);
+`);
     // ================= ADMIN CREATION =================
 const [superadmin] = await db.query(
   "SELECT * FROM users WHERE role = 'SUPERADMIN'"

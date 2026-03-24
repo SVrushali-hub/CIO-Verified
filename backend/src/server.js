@@ -9,6 +9,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import adminPermissionRoutes from "./routes/adminPermissionRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+// import { authenticateUser } from "./middleware/authMiddleware.js";
+import assessorRoutes from "./routes/assessorRoutes.js";
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -22,9 +24,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/profile", profileRoutes);
+app.use("/api", profileRoutes);
 app.use("/api", adminPermissionRoutes);
 app.use("/api/application", applicationRoutes);
+app.use("/api/assessor", assessorRoutes);
 
 // Test route
 app.get("/", (req, res) => {

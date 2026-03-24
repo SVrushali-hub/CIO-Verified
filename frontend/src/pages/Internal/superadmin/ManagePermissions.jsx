@@ -7,28 +7,51 @@ export default function ManagePermissions() {
   useEffect(() => {
     loadUsers();
   }, []);
+  useEffect(() => {
+  console.log("USERS DATA:", users);
+}, [users]);
 
   const loadUsers = async () => {
     const data = await fetchAdmins();
     setUsers(Array.isArray(data) ? data : []);
   };
 
-  // 🔥 Toggle on click
+  // 🔥 Toggle permission
   const handleToggle = async (userId, permId) => {
     const updated = [...users];
 
-    const user = updated.find(u => u.id === userId);
+    // ✅ find correct user using user_id
+    const user = updated.find(u => u.user_id === userId);
+    if (!user) return;
+
     const perm = user.permissions.find(p => p.id === permId);
+    if (!perm) return;
 
+    // toggle UI
     perm.isAllowed = !perm.isAllowed;
-
     setUsers(updated);
 
-    // 🔥 AUTO SAVE (no button needed)
-    await updatePermissions(userId, user.permissions);
+    try {
+      // ✅ CLEAN payload (IMPORTANT)
+      const cleanPermissions = user.permissions.map(p => ({
+        name: p.name,
+        isAllowed: p.isAllowed
+      }));
+
+      await updatePermissions(userId, cleanPermissions);
+
+    } catch (err) {
+      console.error("Update failed:", err);
+
+      // 🔥 rollback UI if error
+      perm.isAllowed = !perm.isAllowed;
+      setUsers([...updated]);
+
+      alert("Failed to update permission");
+    }
   };
 
-  // Get all permission names (header)
+  // Headers (permissions)
   const permissionHeaders =
     users.length > 0 ? users[0].permissions : [];
 
@@ -43,7 +66,7 @@ export default function ManagePermissions() {
             <th>Groups</th>
 
             {permissionHeaders.map(p => (
-              <th key={p.id}>
+              <th key={`header-${p.id}`}>
                 {p.name.replace(/_/g, " ")}
               </th>
             ))}
@@ -52,7 +75,7 @@ export default function ManagePermissions() {
 
         <tbody>
           {users.map(user => (
-            <tr key={user.id}>
+            <tr key={user.user_id}>
 
               {/* USER */}
               <td>
@@ -64,9 +87,12 @@ export default function ManagePermissions() {
 
               {/* GROUPS */}
               <td>
-                {user.groups.length > 0 ? (
+                {user.groups?.length > 0 ? (
                   user.groups.map(g => (
-                    <span key={g.id} className="group-badge">
+                    <span
+                      key={`${user.user_id}-${g.id}`}
+                      className="group-badge"
+                    >
                       {g.name}
                     </span>
                   ))
@@ -78,9 +104,10 @@ export default function ManagePermissions() {
               {/* PERMISSIONS */}
               {user.permissions.map(perm => (
                 <td
-                  key={perm.id}
+                  key={`${user.user_id}-${perm.id}`}
                   className="perm-cell"
-                  onClick={() => handleToggle(user.id, perm.id)}
+                  onClick={() => handleToggle(user.user_id, perm.id)}
+                  style={{ cursor: "pointer", textAlign: "center" }}
                 >
                   {perm.isAllowed ? "✅" : "❌"}
                 </td>

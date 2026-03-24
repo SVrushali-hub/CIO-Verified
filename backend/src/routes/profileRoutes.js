@@ -13,8 +13,8 @@ import { updateCompanyProfile } from "../controllers/profileController.js";
 
 const router = express.Router();
 
-router.get("/", authenticateUser, getProfile);
-router.put("/", authenticateUser , updateProfile);
+router.get("/profile", authenticateUser, getProfile);
+router.put("/profile", authenticateUser , updateProfile);
 router.put("/company", authenticateUser, updateCompanyProfile);
 
 router.post("/send-otp", authenticateUser, sendResetOtp);

@@ -7,12 +7,12 @@ export default function ResetPassword() {
   const [password, setPassword] = useState("");
 
   const sendOtp = async () => {
-    await API.post("/profile/send-otp");
+    await API.post("/send-otp");
     setStep(2);
   };
 
   const resetPassword = async () => {
-    await API.post("/profile/verify-otp", {
+    await API.post("/verify-otp", {
       otp,
       newPassword: password,
     });

@@ -7,9 +7,29 @@ import { sendOTP } from "../utils/mailer.js";
 export const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
+    const role = req.user.role;
 
-    const [rows] = await db.query(
-      `SELECT 
+    // 🔹 INTERNAL USERS (ADMIN / SUPERADMIN)
+    if (role === "ADMIN" || role === "SUPERADMIN") {
+      
+      const [rows] = await db.query(`
+        SELECT 
+          u.email,
+          iu.full_name,
+          iu.phone,
+          iu.department,
+          iu.designation
+        FROM users u
+        LEFT JOIN internal_users iu ON iu.user_id = u.id
+        WHERE u.id = ?
+      `, [userId]);
+
+      return res.json(rows[0] || {});
+    }
+
+    // 🔹 APPLICANT (COMPANY)
+    const [rows] = await db.query(`
+      SELECT 
         company_name AS companyName,
         registration_number AS registrationNumber,
         industry,
@@ -17,16 +37,16 @@ export const getProfile = async (req, res) => {
         designation,
         email,
         phone
-       FROM companies
-       WHERE user_id = ?`,
-      [userId]
-    );
+      FROM companies
+      WHERE user_id = ?
+    `, [userId]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "No data found" });
     }
 
     res.json(rows[0]);
+
   } catch (error) {
     console.error("GET PROFILE ERROR:", error);
     res.status(500).json({ message: "Server error" });

@@ -57,7 +57,7 @@ export default function ProfileDrawer({ onClose }) {
     try {
       setLoadingOtp(true);
 
-      await API.post("/profile/send-otp");
+      await API.post("/send-otp");
 
       alert("OTP sent to your email");
 
@@ -85,7 +85,7 @@ export default function ProfileDrawer({ onClose }) {
   /* RESET PASSWORD */
   const resetPassword = async () => {
     try {
-      await API.post("/profile/verify-otp", {
+      await API.post("/verify-otp", {
         otp,
         newPassword,
       });

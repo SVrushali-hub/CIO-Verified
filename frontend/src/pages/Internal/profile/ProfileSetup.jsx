@@ -36,7 +36,7 @@ export default function ProfileSetup() {
     try {
       if (!form.email) return alert("Enter email first");
 
-      await API.post("/profile/send-email-otp", {
+      await API.post("/send-email-otp", {
         email: form.email,
       });
 
@@ -66,7 +66,7 @@ export default function ProfileSetup() {
     try {
       setVerifying(true);
 
-      await API.post("/profile/verify-email-otp", {
+      await API.post("/verify-email-otp", {
         email: form.email,
         otp,
       });

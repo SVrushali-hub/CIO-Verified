@@ -1,0 +1,65 @@
+.profile-container {
+  max-width: 650px;
+  margin: auto;
+  padding: 30px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.profile-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input, textarea, select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  width: 100%;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+.label {
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #fa7300;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #fa7300;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}

@@ -19,6 +19,10 @@ const storage = multer.diskStorage({
     if (file.fieldname === "pitchDeck") folder = "uploads/pitch";
     if (file.fieldname === "certifications") folder = "uploads/certs";
 
+    // 🔥 ADD THESE FOR ASSESSOR
+    if (file.fieldname === "resume") folder = "uploads/resume";
+    if (file.fieldname === "company_profile") folder = "uploads/company_profile";
+
     createFolder(folder);
     cb(null, folder);
   },

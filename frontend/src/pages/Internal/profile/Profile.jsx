@@ -29,13 +29,13 @@ const [password, setPassword] = useState("");
     fetchProfile();
   }, []);
 const sendOtp = async () => {
-  await API.post("/profile/send-otp");
+  await API.post("/send-otp");
   alert("OTP sent (check console for now)");
   setStep(2);
 };
 
 const resetPassword = async () => {
-  await API.post("/profile/verify-otp", {
+  await API.post("/verify-otp", {
     otp,
     newPassword: password,
   });
