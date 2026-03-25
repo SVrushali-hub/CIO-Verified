@@ -16,7 +16,7 @@ export default function InviteAssessor() {
     try {
       setLoading(true);
 
-      await API.post("/admin/invite-assessor", {
+      await API.post("/invite-assessor", {
         email,
         role,
       });

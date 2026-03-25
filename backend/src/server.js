@@ -11,6 +11,7 @@ import adminPermissionRoutes from "./routes/adminPermissionRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 // import { authenticateUser } from "./middleware/authMiddleware.js";
 import assessorRoutes from "./routes/assessorRoutes.js";
+import assessorApprovalRoutes from "./routes/assessorApprovalRoutes.js";
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -27,10 +28,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", profileRoutes);
-app.use("/api/admin", adminPermissionRoutes);
+app.use("/api", adminPermissionRoutes);
 app.use("/api/application", applicationRoutes);
 app.use("/api/assessor", assessorRoutes);
-
+app.use("/api", assessorApprovalRoutes);
 // Test route
 app.get("/", (req, res) => {
   res.send("CIO Verified API running");
@@ -48,6 +49,7 @@ const startServer = async () => {
   } catch (error) {
     console.error("❌ Server startup error:", error.message);
   }
+  
 };
 
 startServer();

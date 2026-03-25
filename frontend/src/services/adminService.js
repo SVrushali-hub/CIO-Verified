@@ -1,29 +1,40 @@
-
-
 const BASE_URL = "http://localhost:5000/api";
 
-export const fetchAdmins = async () => {
-  const res = await fetch(`${BASE_URL}/admins-with-permissions`);
-  if (!res.ok) throw new Error("Failed to fetch admins");
-  return res.json();
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
 };
 
+// FETCH ADMINS
+export const fetchAdmins = async () => {
+  const res = await fetch(`${BASE_URL}/admins-with-permissions`, {
+    headers: getAuthHeaders()
+  });
+
+  const text = await res.text(); // 🔥 DEBUG
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    console.error("NOT JSON RESPONSE:", text);
+    throw new Error("Backend not hit properly");
+  }
+};
+
+// UPDATE
 export const updatePermissions = async (adminId, permissions) => {
   const res = await fetch(`${BASE_URL}/update-permissions`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       admin_id: adminId,
       permissions
     })
   });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || "Update failed");
-  }
 
   return res.json();
 };
