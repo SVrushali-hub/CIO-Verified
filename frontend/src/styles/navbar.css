@@ -4,7 +4,11 @@
   border-bottom: 1px solid #e6e9ee;
   position: relative;
 }
-
+.logo-image {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
 /* Gradient underline */
 .granuler-navbar::after {
   content: "";
@@ -17,13 +21,13 @@
 }
 
 .nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+
   height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 40px;
 }
 
 /* Logo */

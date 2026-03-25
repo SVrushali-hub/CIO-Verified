@@ -1,0 +1,196 @@
+/* ===== CONTAINER ===== */
+.applications-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===== TITLE ===== */
+.applications-container h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  color: #222;
+}
+
+/* ===== TABLE ===== */
+.table-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app-table th {
+  text-align: left;
+  padding: 15px;
+  background: #f7f8fa;
+  font-weight: 600;
+  color: #444;
+}
+
+.app-table td {
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* ===== COMPANY ===== */
+.company-name {
+  font-weight: 600;
+  color: #222;
+}
+
+/* ===== STATUS BADGE ===== */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* STATUS COLORS */
+.status-submitted {
+  background: #fff4d6;
+  color: #a67c00;
+}
+
+.status-pricing_defined {
+  background: #e6f4ff;
+  color: #0077cc;
+}
+
+.status-invoice_sent {
+  background: #f0e6ff;
+  color: #6a00cc;
+}
+
+.status-paid {
+  background: #e6fff2;
+  color: #00994d;
+}
+
+/* ===== BUTTONS ===== */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* VIEW */
+.view-btn {
+  background: #c05d11;
+  color: #ffffff;
+}
+
+.view-btn:hover {
+  background: #e0e0e0;
+}
+
+/* PRICING */
+.pricing-btn {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.pricing-btn:hover {
+  background: #fed7aa;
+}
+
+/* INVOICE */
+.invoice-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.invoice-btn:hover {
+  background: #bae6fd;
+}
+
+/* ===== LOADING ===== */
+.loading {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 16px;
+}
+/* ACTION CONTAINER */
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* BUTTON BASE */
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+/* VIEW */
+.btn.view {
+  background: yellowgreen;
+}
+
+.btn.view:hover {
+  background: #e0e0e0;
+  color: #000;
+}
+
+/* ISSUE */
+.btn.issue {
+  background: #ff4d4f;
+  color: white;
+}
+
+.btn.issue:hover {
+  background: #d9363e;
+}
+
+/* PRICING */
+.btn.pricing {
+  background: #1890ff;
+  color: white;
+}
+
+.btn.pricing:hover {
+  background: #1677cc;
+}
+
+/* INVOICE */
+.btn.invoice {
+  background: #52c41a;
+  color: white;
+}
+
+.btn.invoice:hover {
+  background: #389e0d;
+}
+.status-badge.issue_raised {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+.status-badge.invoice_sent {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.status-badge.pricing_defined {
+  background: #e6f7ff;
+  color: #1890ff;
+}

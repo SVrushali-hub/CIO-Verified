@@ -1,49 +1,62 @@
 import { useNavigate } from "react-router-dom";
 import "../../../styles/superadmin.css";
+import { Users, UserPlus, ShieldCheck, FileText, CheckCircle } from "lucide-react";
 
 export default function SuperAdminDashboard() {
   const navigate = useNavigate();
 
+  const cards = [
+    {
+      title: "Create User",
+      desc: "Add new internal team members",
+      icon: <UserPlus size={28} />,
+      route: "/internal/superadmin/create-user",
+    },
+    {
+      title: "User Management",
+      desc: "View, reset, deactivate users",
+      icon: <Users size={28} />,
+      route: "/internal/superadmin/users",
+    },
+    {
+      title: "Manage Permissions",
+      desc: "Grant or revoke permissions",
+      icon: <ShieldCheck size={28} />,
+      route: "/internal/superadmin/manage-permissions",
+    },
+    {
+      title: "Verify Auditors",
+      desc: "Approve or reject applications",
+      icon: <CheckCircle size={28} />,
+      route: "/internal/superadmin/verify-auditors",
+    },
+    {
+      title: "Applications",
+      desc: "View and manage applications",
+      icon: <FileText size={28} />,
+      route: "/internal/applications",
+    },
+  ];
+
   return (
     <div className="sa-container">
-      <h1>Super Admin Dashboard</h1>
+      <div className="sa-header">
+        <h1>Super Admin Dashboard</h1>
+        <p>Manage users, permissions, and system workflows</p>
+      </div>
 
       <div className="sa-grid">
-
-        <div
-          className="sa-card"
-          onClick={() => navigate("/internal/superadmin/create-user")}
-        >
-          <h3>Create User</h3>
-          <p>Add new internal team members</p>
-        </div>
-
-        <div
-          className="sa-card"
-          onClick={() => navigate("/internal/superadmin/users")}
-        >
-          <h3>User Management</h3>
-          <p>View, reset, deactivate users</p>
-        </div>
-
-        {/* ✅ NEW CARD */}
-        <div
-          className="sa-card"
-          onClick={() => navigate("/internal/superadmin/manage-permissions")}
-        >
-          <h3>Manage Permissions</h3>
-          <p>Grant or revoke permissions</p>
-          
-        </div>
-        
-         <div
-          className="sa-card"
-          onClick={() => navigate("/internal/superadmin/verify-auditors")}
-        >
-          <h3>Verify Auditors</h3>
-          <p>Approve or reject auditor applications</p>
-        </div>
-
+        {cards.map((card, index) => (
+          <div
+            key={index}
+            className="sa-card"
+            onClick={() => navigate(card.route)}
+          >
+            <div className="sa-icon">{card.icon}</div>
+            <h3>{card.title}</h3>
+            <p>{card.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

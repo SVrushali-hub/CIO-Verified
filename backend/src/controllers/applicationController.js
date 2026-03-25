@@ -7,13 +7,36 @@ export const getMyApplications = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const [rows] = await db.query(
-      `SELECT id, status, created_at 
-       FROM applications 
-       WHERE user_id = ? 
-       ORDER BY id DESC`,
-      [req.user.id]
-    );
+   const [rows] = await db.query(
+  `SELECT 
+      a.*,
+      i.total_amount,
+      ii.status AS issue_status
+
+   FROM applications a
+
+   /* ✅ latest invoice */
+   LEFT JOIN invoices i
+     ON i.id = (
+       SELECT MAX(id)
+       FROM invoices
+       WHERE application_id = a.id
+     )
+
+   /* ✅ latest issue */
+   LEFT JOIN invoice_issues ii
+     ON ii.id = (
+       SELECT id
+       FROM invoice_issues
+       WHERE application_id = a.id
+       ORDER BY created_at DESC
+       LIMIT 1
+     )
+
+   WHERE a.user_id = ?
+   ORDER BY a.created_at DESC`,
+  [req.user.id]
+);
 
     res.json(rows);
 
@@ -27,23 +50,23 @@ export const getApplicationById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [rows] = await db.query(
-      "SELECT id, status, created_at, last_updated_at FROM applications WHERE id = ?",
-      [id]
-    );
+    const [rows] = await db.query(`
+      SELECT a.*, c.company_name
+      FROM applications a
+      LEFT JOIN companies c ON a.company_id = c.id
+      WHERE a.id = ?
+    `, [id]);
 
-    if (!rows.length) {
-      return res.status(404).json({ message: "Application not found" });
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Not found" });
     }
 
     res.json(rows[0]);
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
-
 export const submitApplication = async (req, res) => {
   const conn = await db.getConnection();
 
@@ -307,5 +330,80 @@ export const submitApplication = async (req, res) => {
     res.status(500).json({ error: err.message });
   } finally {
     conn.release();
+  }
+};
+
+export const getApplications = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT a.*, c.company_name
+      FROM applications a
+      LEFT JOIN companies c ON a.company_id = c.id
+      ORDER BY a.created_at DESC
+    `);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching applications" });
+  }
+};
+
+export const setPricing = async (req, res) => {
+  try {
+    const { application_id, total_amount } = req.body;
+
+    // 1️⃣ Update application
+    await db.query(
+      `UPDATE applications 
+       SET total_amount = ?, status = 'PRICING_DEFINED' 
+       WHERE id = ?`,
+      [total_amount, application_id]
+    );
+
+    // 2️⃣ (Optional) update items
+    await db.query(
+      `UPDATE application_items 
+       SET final_price = price 
+       WHERE application_id = ?`,
+      [application_id]
+    );
+
+    return res.json({ message: "Pricing set successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error setting pricing" });
+  }
+};
+/* =========================
+   CANCEL APPLICATION
+========================= */
+export const cancelApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 🔍 check if exists
+    const [rows] = await db.query(
+      "SELECT * FROM applications WHERE id = ?",
+      [id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    // ❌ cancel application
+    await db.query(
+      "UPDATE applications SET status = 'CANCELLED' WHERE id = ?",
+      [id]
+    );
+
+    res.json({ message: "Application cancelled successfully" });
+
+  } catch (err) {
+    console.error("❌ CANCEL ERROR:", err);
+    res.status(500).json({ message: "Failed to cancel application" });
   }
 };

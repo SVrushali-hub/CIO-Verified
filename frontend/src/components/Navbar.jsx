@@ -2,6 +2,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styles/navbar.css";
 import SidebarDrawer from "./SidebarDrawer";
+import logo from "../assets/cio-logo.png";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -30,11 +32,7 @@ function Navbar() {
       <div className="nav-container">
         <div className="nav-logo">
           <a href="https://cioverified.com/">
-            <img
-              src="/assets/CIO Logo.png"
-              alt="CIO Verified Logo"
-              className="logo-image"
-            />
+           <img src={logo} alt="logo" className="logo-image" />
           </a>
         </div>
 

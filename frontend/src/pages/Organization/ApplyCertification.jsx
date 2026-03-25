@@ -409,7 +409,7 @@ if (step === 4) {
     }
 
     // ✅ API CALL (IMPORTANT - YOU REMOVED THIS)
-    const res = await API.post("/application/submit", form, {
+    const res = await API.post("/applications/submit", form, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1141,7 +1141,6 @@ onChange={handleProductChange}
                           <thead>
                             
                             <tr>
-                              
                               <th>Name</th> <th>Description</th>
                               <th>Category</th> <th>Industry</th> <th>Team</th>
                               <th>Version</th> <th>Deployment</th>

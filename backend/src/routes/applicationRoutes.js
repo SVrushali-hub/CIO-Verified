@@ -2,18 +2,42 @@ import express from "express";
 import {
   submitApplication,
   getMyApplications,
-  getApplicationById
+  getApplicationById,
+  getApplications,        // 🔥 NEW
+  setPricing,
+  cancelApplication       // 🔥 NEW
 } from "../controllers/applicationController.js";
+
 import { upload } from "../middleware/upload.js";
 import { authenticateUser } from "../middleware/authMiddleware.js";
+import { hasPermission, loadPermissions } from "../middleware/hasPermission.js";
 
 const router = express.Router();
 
-// ================= GET ROUTES =================
-router.get("/my", authenticateUser, getMyApplications);  // ✅ protected
-router.get("/:id", authenticateUser, getApplicationById); // ✅ added auth (important)
+/* =========================
+   GET ROUTES
+========================= */
+router.get(
+  "/",
+  authenticateUser,
+  loadPermissions,   // ✅ FIRST load permissions
+  hasPermission("view_applications"),
+  getApplications
+);
 
-// ================= POST ROUTE =================
+// Applicant
+router.get("/my", authenticateUser, getMyApplications);
+
+// Single application
+router.get("/:id", authenticateUser, getApplicationById);
+
+// 🔥 SUPERADMIN + ADMIN (with permission)
+
+/* =========================
+   POST ROUTES
+========================= */
+
+// Submit application
 router.post(
   "/submit",
   authenticateUser,
@@ -27,4 +51,17 @@ router.post(
   submitApplication
 );
 
+// 🔥 SET PRICING (SUPERADMIN / ADMIN WITH PERMISSION)
+router.post(
+  "/set-pricing",
+  authenticateUser,
+  hasPermission("set_pricing"),
+  setPricing
+);
+
+router.post(
+  "/cancel/:id",
+  authenticateUser,
+  cancelApplication
+);
 export default router;

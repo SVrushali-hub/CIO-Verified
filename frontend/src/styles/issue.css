@@ -1,0 +1,243 @@
+/* HEADER */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.resolve-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resolved-badge {
+  background: #16a34a;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* CONTAINER */
+.chat-container {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 15px;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MESSAGES */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* ROW ALIGNMENT */
+.chat-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.chat-row.left {
+  justify-content: flex-start;
+}
+
+.chat-row.right {
+  justify-content: flex-end;
+}
+
+/* BUBBLE */
+.chat-bubble {
+  max-width: 60%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ROLE COLORS */
+.chat-bubble.applicant {
+  background: #f1f1f1;
+}
+
+.chat-bubble.admin {
+  background: #dbeafe;
+}
+
+.chat-bubble.superadmin {
+  background: #ede9fe;
+}
+
+/* OWN MESSAGE */
+.chat-row.right .chat-bubble {
+  background: #22c55e;
+  color: white;
+}
+
+/* TEXT */
+.chat-role {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.chat-text {
+  margin: 5px 0;
+}
+
+.chat-time {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* INPUT */
+.chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.chat-input button {
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}.issue-page {
+  max-width: 900px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+.chat-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  overflow: hidden;
+}
+
+/* HEADER */
+.chat-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* MESSAGES */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+/* BUBBLES */
+.chat-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.chat-row.right {
+  justify-content: flex-end;
+}
+
+.chat-bubble {
+  max-width: 60%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* COLORS */
+.chat-bubble.applicant {
+  background: #e5e7eb;
+}
+
+.chat-bubble.superadmin {
+  background: #ede9fe;
+}
+
+.chat-bubble.admin {
+  background: #dbeafe;
+}
+
+.chat-row.right .chat-bubble {
+  background: #f97316;
+  color: white;
+}
+
+/* INPUT */
+.chat-input {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.chat-input textarea {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  resize: none;
+}
+
+.chat-input button {
+  background: #f97316;
+  color: white;
+  padding: 0 20px;
+  border: none;
+}
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.resolve-btn {
+  background: #22c55e;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background: #ef4444;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.resolved-badge {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.rejected-badge {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 6px 10px;
+  border-radius: 999px;
+}

@@ -13,7 +13,7 @@ function CompanyDashboard() {
 
   const fetchApplications = async () => {
     try {
-      const res = await API.get("/application/my");
+      const res = await API.get("/applications/my");
       setApplications(res.data);
     } catch (err) {
       console.error(err);

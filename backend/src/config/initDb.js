@@ -143,10 +143,15 @@ await db.query(`
           'UNDER_REVIEW_OPS',
           'PRICING_DEFINED',
           'INVOICE_SENT',
+          'ISSUE_RAISED',
+          'ISSUE_RESOLVED',
+          'ISSUE_REJECTED',
+          'INVOICE_ACCEPTED',
           'PAID',
           'AUDITOR_ASSIGNED',
           'AUDIT_COMPLETED',
-          'FINAL_APPROVED'
+          'FINAL_APPROVED',
+          'CANCELLED'
         ) DEFAULT 'SUBMITTED',
 
         assigned_auditor_id INT,
@@ -306,6 +311,27 @@ await db.query(`
         FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
       )
     `);
+
+    //==========INVOICE ISSUES ==============
+await db.query(`
+CREATE TABLE IF NOT EXISTS invoice_issues (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  application_id INT NOT NULL,
+  user_id INT NOT NULL,
+
+  message TEXT NOT NULL,
+
+  role ENUM('APPLICANT','ADMIN','SUPERADMIN') NOT NULL,
+
+  status ENUM('OPEN','RESOLVED') DEFAULT 'OPEN',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+`);
     // ================= INVOICE MESSAGES ================= 🔥
     await db.query(`
       CREATE TABLE IF NOT EXISTS invoice_messages (
@@ -542,7 +568,8 @@ await db.query(`
 
 ('Finance', 'Handles invoice generation, payments, and financial tracking'),
 
-('Reporting', 'Provides access to reports and analytics');
+('Reporting', 'Provides access to reports and analytics'),
+('Support Team', 'Handles customer support and issue resolution');
     `);
 
     // ================= SEED PERMISSIONS =================
@@ -575,10 +602,15 @@ await db.query(`
 ('send_invoice'),
 ('mark_payment_paid'),
 ('verify_payment'),
-
+('Set_pricing'),
 -- Reporting
 ('view_reports'),
-('view_analytics');
+('view_analytics'),
+
+-- Support
+('view_issues'),
+('resolve_issues'),
+('reply_issues');
     `);
 
     // ================= MAP GROUP → PERMISSIONS =================
@@ -621,7 +653,8 @@ AND p.name IN (
   'generate_invoice',
   'send_invoice',
   'mark_payment_paid',
-  'verify_payment'
+  'verify_payment',
+  'set_pricing'
 );
     `);
 
@@ -634,6 +667,16 @@ AND p.name IN (
   'view_reports',
   'view_analytics'
 );
+    `);
+
+    await db.query(`INSERT IGNORE INTO auth_group_permissions (group_id, permission_id)
+SELECT 
+  g.id AS group_id,
+  p.id AS permission_id
+FROM auth_groups g
+JOIN permissions p
+WHERE g.name = 'Support Team'
+AND p.name IN ('view_issues', 'reply_issues', 'resolve_issues');
     `);
 
     // ================= APPLICATION ASSESSMENT=================

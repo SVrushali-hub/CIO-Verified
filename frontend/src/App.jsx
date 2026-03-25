@@ -1,9 +1,9 @@
 import {
-BrowserRouter,
-Routes,
-Route,
-Navigate,
-useLocation
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation
 } from "react-router-dom";
 
 import Register from "./pages/Register";
@@ -25,7 +25,6 @@ import Assessor from "./pages/Assessor/Assessor";
 import AssessorProfile from "./pages/Assessor/AssessorProfile";
 
 // Internal
-import OperationsDashboard from "./pages/Internal/operations/OperationsDashboard";
 import ApplicationsList from "./pages/Internal/operations/ApplicationsList";
 import ApplicationDetails from "./pages/Internal/operations/ApplicationDetails";
 
@@ -40,28 +39,26 @@ import AdminDashboard from "./pages/Internal/admin/AdminDashboard";
 import ProfileSetup from "./pages/Internal/profile/ProfileSetup";
 import InviteAssessor from "./pages/Internal/admin/InviteAssessor";
 import VerifyAuditors from "./pages/Internal/superadmin/VerifyAuditor";
-
-
+import InvoicePage from "./pages/Internal/admin/InvoicePage";
+import IssueDiscussionPage from "./pages/Common/IssueDiscussionPage";
 /* ========================= */
 function AppContent() {
-const location = useLocation();
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/assessor-form";
 
-// 🔥 Hide navbar for external invite form
-const hideNavbar = location.pathname === "/assessor-form";
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
 
-return (
-<>
-{!hideNavbar && <Navbar />}
+      <Routes>
 
-  <Routes>
+        {/* PUBLIC */}
+        <Route path="/" element={<Navigate to="/register" />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
-    {/* PUBLIC */}
-    <Route path="/" element={<Navigate to="/register" />} />
-    <Route path="/register" element={<Register />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/verify-otp" element={<VerifyOtp />} />
-
-   {/* COMPANY */}
+        {/* COMPANY */}
         <Route
           path="/dashboard"
           element={
@@ -79,180 +76,175 @@ return (
             </ProtectedRoute>
           }
         />
-<Route
-  path="/dashboard/company-profile"
-  element={
-    <ProtectedRoute roles={["APPLICANT"]}>
-      <CompanyProfile />
-    </ProtectedRoute>
-  }
-/>
 
-<Route path="/dashboard/application/:id" element={<ApplicationStatus />} />
-    {/* ================= ASSESSOR ================= */}
+        <Route
+          path="/dashboard/company-profile"
+          element={
+            <ProtectedRoute roles={["APPLICANT"]}>
+              <CompanyProfile />
+            </ProtectedRoute>
+          }
+        />
 
-    <Route path="/assessor/login" element={<AssessorLogin />} />
+        <Route path="/dashboard/application/:id" element={<ApplicationStatus />} />
 
-    <Route
-      path="/assessor/dashboard"
-      element={
-        <ProtectedRoute roles={["AUDITOR", "REVIEWER"]}>
-          <Assessor />
-        </ProtectedRoute>
-      }
-    />
+        {/* ================= ASSESSOR ================= */}
+        <Route path="/assessor/login" element={<AssessorLogin />} />
 
-    {/* 🔥 INVITE FORM (PUBLIC, NO PROTECTION) */}
-    <Route path="/assessor-form" element={<AssessorProfile />} />
+        <Route
+          path="/assessor/dashboard"
+          element={
+            <ProtectedRoute roles={["AUDITOR", "REVIEWER"]}>
+              <Assessor />
+            </ProtectedRoute>
+          }
+        />
 
-    {/* ================= INTERNAL LOGIN ================= */}
-    <Route path="/internal-login" element={<InternalLogin />} />
+        <Route path="/assessor-form" element={<AssessorProfile />} />
 
-    {/* ================= SUPERADMIN ================= */}
-    <Route
-      path="/internal/superadmin"
-      element={
-        <ProtectedRoute roles={["SUPERADMIN"]}>
-          <InternalLayout>
-            <SuperAdminDashboard />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        {/* ================= INTERNAL LOGIN ================= */}
+        <Route path="/internal-login" element={<InternalLogin />} />
 
-    <Route
-      path="/internal/superadmin/create-user"
-      element={
-        <ProtectedRoute roles={["SUPERADMIN"]}>
-          <InternalLayout>
-            <CreateUser />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        {/* ================= SUPERADMIN ================= */}
+        <Route
+          path="/internal/superadmin"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <InternalLayout>
+                <SuperAdminDashboard />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/internal/superadmin/users"
-      element={
-        <ProtectedRoute roles={["SUPERADMIN"]}>
-          <InternalLayout>
-            <UserList />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/internal/superadmin/create-user"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <InternalLayout>
+                <CreateUser />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/internal/superadmin/manage-permissions"
-      element={
-        <ProtectedRoute roles={["SUPERADMIN"]}>
-          <InternalLayout>
-            <ManagePermissions />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/internal/superadmin/users"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <InternalLayout>
+                <UserList />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/internal/superadmin/permissions/:id"
-  element={
-    <ProtectedRoute roles={["SUPERADMIN"]}>
-      <InternalLayout>
-        <UserPermissions />
-      </InternalLayout>
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/internal/superadmin/manage-permissions"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <InternalLayout>
+                <ManagePermissions />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/internal/superadmin/verify-auditors"
-  element={
-    <ProtectedRoute allowedRoles={["SUPERADMIN"]}>
-      <VerifyAuditors />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/internal/superadmin/verify-auditors"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN"]}>
+              <VerifyAuditors />
+            </ProtectedRoute>
+          }
+        />
 
-    {/* ================= OPERATIONS ================= */}
-    <Route
-      path="/internal/operations"
-      element={
-        <ProtectedRoute roles={["OPERATIONS"]}>
-          <InternalLayout>
-            <OperationsDashboard />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        {/* 🔥 APPLICATIONS (COMMON) */}
+        <Route
+          path="/internal/applications"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN", "ADMIN"]}>
+              <InternalLayout>
+                <ApplicationsList />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/internal/operations/applications"
-      element={
-        <ProtectedRoute roles={["OPERATIONS"]}>
-          <InternalLayout>
-            <ApplicationsList />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/internal/application/:id"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN", "ADMIN"]}>
+              <InternalLayout>
+                <ApplicationDetails />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/internal/operations/application/:id"
-      element={
-        <ProtectedRoute roles={["OPERATIONS"]}>
-          <InternalLayout>
-            <ApplicationDetails />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        {/* ================= ADMIN ================= */}
+        <Route
+          path="/internal/admin"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <InternalLayout>
+                <AdminDashboard />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    {/* ================= ADMIN ================= */}
-    <Route
-      path="/internal/admin"
-      element={
-        <ProtectedRoute roles={["ADMIN"]}>
-          <InternalLayout>
-            <AdminDashboard />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/internal/admin/invite-assessor"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <InternalLayout>
+                <InviteAssessor />
+              </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/internal/admin/invite-assessor"
-      element={
-        <ProtectedRoute roles={["ADMIN"]}>
-          <InternalLayout>
-            <InviteAssessor />
-          </InternalLayout>
-        </ProtectedRoute>
-      }
-    />
+        {/* ================= PROFILE ================= */}
+        <Route
+          path="/internal/profile-setup"
+          element={
+            <ProtectedRoute roles={["SUPERADMIN", "ADMIN"]}>
+              <ProfileSetup />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/internal/admin/invoice/:id"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+            <InternalLayout>
+              <InvoicePage />
+            </InternalLayout>
+            </ProtectedRoute>
+          }
+        />
 
-    {/* ================= PROFILE SETUP ================= */}
-    <Route
-      path="/internal/profile-setup"
-      element={
-        <ProtectedRoute roles={["SUPERADMIN", "ADMIN", "OPERATIONS"]}>
-          <ProfileSetup />
-        </ProtectedRoute>
-      }
-    />
+        <Route
+        path="dashboard/issues/:id"
+        element={<IssueDiscussionPage />}
+        />
+       <Route
+          path="/internal/issues/:id"
+          element={<IssueDiscussionPage />}
+        />
 
-  </Routes>
-</>
-
-);
+      </Routes>
+    </>
+  );
 }
 
-/* ========================= */
 function App() {
-return (
-<BrowserRouter>
-<AppContent />
-</BrowserRouter>
-);
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
 
 export default App;

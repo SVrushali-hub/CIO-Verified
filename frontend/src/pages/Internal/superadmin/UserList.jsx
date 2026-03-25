@@ -95,17 +95,7 @@ export default function UserList() {
                         {u.is_active ? "Deactivate" : "Activate"}
                       </button>
 
-                      {/* 🔥 NEW BUTTON */}
-                      <button
-                        className="action-btn manage"
-                        onClick={() =>
-                          navigate(
-                            `/internal/superadmin/permissions/${u.id}`
-                          )
-                        }
-                      >
-                        Permissions
-                      </button>
+                      
                     </>
                   )}
                 </td>
