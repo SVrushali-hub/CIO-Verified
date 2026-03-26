@@ -60,7 +60,7 @@ await db.query(`
         user_id INT,
 
         company_name VARCHAR(255),
-        registration_number VARCHAR(50),
+        registration_number VARCHAR(50) UNIQUE,
 
         industry VARCHAR(100),
         contact_person VARCHAR(100),
