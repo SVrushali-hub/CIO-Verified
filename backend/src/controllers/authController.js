@@ -22,33 +22,45 @@ export const register = async (req, res) => {
     } = req.body;
 
     // ✅ CHECK EXISTING USER
-    const [existing] = await conn.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
+   // ✅ CHECK EXISTING USER 
+const [existing] = await conn.query(
+  "SELECT * FROM users WHERE email = ?",
+  [email]
+);
+
+if (existing.length > 0) {
+  if (!existing[0].is_verified) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 5 * 60 * 1000);
+
+    await conn.query(
+      "UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?",
+      [otp, expiry, email]
     );
 
-    if (existing.length > 0) {
-      if (!existing[0].is_verified) {
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const expiry = new Date(Date.now() + 5 * 60 * 1000);
+    await sendOTP(email, otp);
 
-        await conn.query(
-          "UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?",
-          [otp, expiry, email]
-        );
+    return res.status(200).json({
+      message: "OTP resent to your email"
+    });
+  }
 
-        await sendOTP(email, otp);
+  return res.status(400).json({
+    message: "User already exists"
+  });
+}
 
-        return res.status(200).json({
-          message: "OTP resent to your email"
-        });
-      }
+// ✅ NOW CHECK REGISTRATION NUMBER
+const [existingReg] = await conn.query(
+  "SELECT id FROM companies WHERE registration_number = ?",
+  [registrationNumber]
+);
 
-      return res.status(400).json({
-        message: "User already exists"
-      });
-    }
-
+if (existingReg.length > 0) {
+  return res.status(400).json({
+    message: "Company registration number already exists"
+  });
+}
     // ✅ PASSWORD HASH
     const hashedPassword = await bcrypt.hash(password, 10);
 
