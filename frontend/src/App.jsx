@@ -23,6 +23,12 @@ import ApplicationStatus from "./pages/ApplicationStatus";
 import AssessorLogin from "./pages/Assessor/AssessorLogin";
 import Assessor from "./pages/Assessor/Assessor";
 import AssessorProfile from "./pages/Assessor/AssessorProfile";
+import AuditorApplications from "./pages/Assessor/Auditor";
+import ReviewerApplications from "./pages/Assessor/Reviewer";
+import AuditorAuditPage from "./pages/Assessor/AuditorAuditPage";
+import ChecklistDetail from "./pages/Assessor/ChecklistDetail";
+import ReviewerChecklists from "./pages/Assessor/ReviewerChecklists";
+import ReviewerChecklistDetail from "./pages/Assessor/ReviewerChecklistDetail";
 
 // Internal
 import OperationsDashboard from "./pages/Internal/operations/OperationsDashboard";
@@ -92,15 +98,47 @@ return (
     {/* ================= ASSESSOR ================= */}
 
     <Route path="/assessor/login" element={<AssessorLogin />} />
+<Route
+  path="/assessor/dashboard"
+  element={
+    <ProtectedRoute>
+      <Assessor />
+    </ProtectedRoute>
+  }
+/>
 
-    <Route
-      path="/assessor/dashboard"
-      element={
-        <ProtectedRoute roles={["AUDITOR", "REVIEWER"]}>
-          <Assessor />
-        </ProtectedRoute>
-      }
-    />
+<Route
+  path="/assessor/audit"
+  element={
+    <ProtectedRoute>
+      <AuditorApplications />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/assessor/review"
+  element={
+    <ProtectedRoute>
+      <ReviewerApplications />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/assessor/profile"
+  element={
+    <ProtectedRoute>
+      <AssessorProfile />
+    </ProtectedRoute>
+  }
+/>
+
+<Route path="/assessor/audit/:applicationId" element={<AuditorAuditPage />} />
+<Route path="/assessor/checklist/:checklistId" element={<ChecklistDetail />} />
+
+<Route path="/assessor/review" element={<ReviewerChecklists />} />
+<Route path="/assessor/review/:checklistId" element={<ReviewerChecklistDetail />} />
 
     {/* 🔥 INVITE FORM (PUBLIC, NO PROTECTION) */}
     <Route path="/assessor-form" element={<AssessorProfile />} />

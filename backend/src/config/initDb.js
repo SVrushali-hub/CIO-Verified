@@ -4,9 +4,8 @@ export const initDatabase = async () => {
   try {
     console.log("🔄 Initializing Database...");
 
-
-   // ================= USERS =================
- await db.query(`
+    // ================= USERS =================
+    await db.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -34,7 +33,7 @@ export const initDatabase = async () => {
     `);
     // ================= INTERNAL USERS =================
 
-await db.query(`
+    await db.query(`
   CREATE TABLE IF NOT EXISTS internal_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -53,7 +52,7 @@ await db.query(`
   )
 `);
     // ================= COMPANIES =================
-        await db.query(`
+    await db.query(`
       CREATE TABLE IF NOT EXISTS companies (
         id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -118,7 +117,7 @@ await db.query(`
     `);
 
     // ================= APPLICATIONS =================
-        await db.query(`
+    await db.query(`
       CREATE TABLE IF NOT EXISTS applications (
         id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -169,7 +168,7 @@ await db.query(`
         FOREIGN KEY (verified_by) REFERENCES users(id)
       )
     `);
-       /* =========================
+    /* =========================
        APPLICATION ITEMS
     ========================= */
     await db.query(`
@@ -258,7 +257,6 @@ await db.query(`
       )
     `);
 
-
     // ================= EVIDENCES =================
     await db.query(`
       CREATE TABLE IF NOT EXISTS evidences (
@@ -281,7 +279,7 @@ await db.query(`
       )
     `);
     // ================= INVOICES ================= 🔥
-     await db.query(`
+    await db.query(`
       CREATE TABLE IF NOT EXISTS invoices (
         id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -337,26 +335,9 @@ await db.query(`
       )
     `);
 
-    // ================= CERTIFICATES =================
+    // ================= AUDITOR_PROFILE =================
+
     await db.query(`
-      CREATE TABLE IF NOT EXISTS certificates (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-
-        application_id INT,
-        item_id INT,
-
-        certificate_name VARCHAR(255),
-        drive_file_id VARCHAR(255),
-        certificate_url TEXT,
-
-        issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-        FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE,
-        FOREIGN KEY (item_id) REFERENCES application_items(id) ON DELETE CASCADE
-      )
-    `);
-
-     await db.query(`
       CREATE TABLE if not exists auditor_profiles (
   id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -399,7 +380,7 @@ await db.query(`
   FOREIGN KEY (approved_by) REFERENCES users(id)
 );
     `);
-  // ================= Reviewers ================= 
+    // ================= Reviewers =================
     await db.query(`
      CREATE TABLE if not exists reviewer_profiles (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -444,7 +425,6 @@ await db.query(`
 );
     `);
 
- 
     // ================= AUTH GROUPS =================
     await db.query(`
       CREATE TABLE IF NOT EXISTS auth_groups (
@@ -679,7 +659,7 @@ AND p.name IN (
     ON DELETE CASCADE
 );
 `);
-// ================= Assessor Profiles Temp =================
+    // ================= Assessor Profiles Temp =================
     await db.query(`CREATE TABLE IF NOT EXISTS assessor_profiles_temp (
   id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -715,37 +695,410 @@ AND p.name IN (
     ON DELETE CASCADE
 );
 `);
-    // ================= ADMIN CREATION =================
-const [superadmin] = await db.query(
-  "SELECT * FROM users WHERE role = 'SUPERADMIN'"
+
+    // ================= checklist_frameworks =================
+
+    await db.query(`CREATE TABLE IF NOT EXISTS checklist_frameworks (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  framework_code VARCHAR(50) NOT NULL UNIQUE,
+  framework_name VARCHAR(255) NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  description TEXT,
+
+  is_active BOOLEAN DEFAULT TRUE,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+  
+`);
+
+    // ================= checklist_templates  =================
+
+    await db.query(`CREATE TABLE IF NOT EXISTS checklist_templates (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  framework_id INT NOT NULL,
+
+  checklist_type ENUM('PRODUCT','SOLUTION') NOT NULL,
+
+  category VARCHAR(100) NOT NULL,
+  subcategory VARCHAR(150) DEFAULT NULL,
+
+  pillar_code VARCHAR(50) NOT NULL,
+  pillar_name VARCHAR(150) NOT NULL,
+
+  item_code VARCHAR(255) NOT NULL,
+  item_name VARCHAR(255) NOT NULL,
+  description TEXT,
+
+  applicability_text TEXT,
+
+  json_key VARCHAR(255) DEFAULT NULL,
+
+  max_score DECIMAL(6,2) NOT NULL DEFAULT 0,
+  min_required_score DECIMAL(6,2) DEFAULT 0,
+
+  is_critical BOOLEAN DEFAULT FALSE,
+  evidence_required BOOLEAN DEFAULT TRUE,
+
+  item_status_default ENUM(
+    'pending',
+    'in_review',
+    'completed',
+    'not_applicable'
+  ) DEFAULT 'pending',
+
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_checklist_templates_framework
+    FOREIGN KEY (framework_id) REFERENCES checklist_frameworks(id) ON DELETE CASCADE,
+
+  UNIQUE KEY uq_template_item (
+    framework_id,
+    checklist_type,
+    category,
+    subcategory,
+    pillar_code,
+    item_code
+  )
 );
 
-if (superadmin.length === 0) {
-  const bcrypt = (await import("bcryptjs")).default;
+`);
 
-  const password = process.env.SUPERADMIN_PASSWORD || "SuperAdmin@123";
-  const hashedPassword = await bcrypt.hash(password, 10);
+    // ================= Assessment_checklists =================
+    await db.query(`
+CREATE TABLE IF NOT EXISTS assessment_checklists (
+  id INT AUTO_INCREMENT PRIMARY KEY,
 
-  await db.query(
-  `INSERT INTO users 
+  application_id INT NOT NULL,
+  company_id INT NOT NULL,
+
+  entity_type ENUM('product','solution') NOT NULL,
+  entity_id INT NOT NULL,
+  entity_name VARCHAR(255) NOT NULL,
+
+  checklist_type ENUM('PRODUCT','SOLUTION') NOT NULL,
+
+  framework_id INT NOT NULL,
+  framework_version VARCHAR(50) NOT NULL,
+
+  category VARCHAR(100) NOT NULL,
+  subcategory VARCHAR(150) DEFAULT NULL,
+
+  assigned_auditor_id INT DEFAULT NULL,
+  assigned_reviewer_id INT DEFAULT NULL,
+
+  assessment_date DATE DEFAULT NULL,
+  notes TEXT,
+  review_comments TEXT,
+
+  status ENUM(
+    'DRAFT',
+  'IN_PROGRESS',
+  'SUBMITTED',
+  'REVIEWED',
+  'REWORK_REQUIRED',
+  'FINALIZED'
+  ) DEFAULT 'DRAFT',
+
+  total_score DECIMAL(6,2) DEFAULT 0,
+  max_score DECIMAL(6,2) DEFAULT 0,
+  percentage_score DECIMAL(6,2) DEFAULT 0,
+
+  trust_index DECIMAL(5,2) DEFAULT 0,
+
+  critical_failure BOOLEAN DEFAULT FALSE,
+  pillar_rule_failure BOOLEAN DEFAULT FALSE,
+
+  evaluation_status ENUM(
+    'NOT_STARTED',
+    'IN_PROGRESS',
+    'COMPLETED'
+  ) DEFAULT 'NOT_STARTED',
+
+  certification_status ENUM(
+    'NOT_EVALUATED',
+    'CERTIFIED',
+    'WITHHELD',
+    'NOT_CERTIFIED'
+  ) DEFAULT 'NOT_EVALUATED',
+
+  certification_band VARCHAR(100) DEFAULT NULL,
+  outcome_label VARCHAR(150) DEFAULT NULL,
+
+  certificate_eligible BOOLEAN DEFAULT FALSE,
+
+  issued_on DATE DEFAULT NULL,
+  valid_till DATE DEFAULT NULL,
+
+  reviewed_at TIMESTAMP NULL DEFAULT NULL,
+  finalized_at TIMESTAMP NULL DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_assessment_checklists_application
+    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_assessment_checklists_company
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_assessment_checklists_auditor
+    FOREIGN KEY (assigned_auditor_id) REFERENCES users(id) ON DELETE SET NULL,
+
+  CONSTRAINT fk_assessment_checklists_reviewer
+    FOREIGN KEY (assigned_reviewer_id) REFERENCES users(id) ON DELETE SET NULL,
+
+  CONSTRAINT fk_assessment_checklists_framework
+    FOREIGN KEY (framework_id) REFERENCES checklist_frameworks(id) ON DELETE RESTRICT,
+
+  UNIQUE KEY uq_assessment_entity (
+    application_id,
+    entity_type,
+    entity_id,
+    framework_id
+  )
+);
+`);
+
+    // ================= checklist_response_items  =================
+    await db.query(`
+CREATE TABLE IF NOT EXISTS checklist_response_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  checklist_id INT NOT NULL,
+  template_id INT DEFAULT NULL,
+
+  checklist_type ENUM('PRODUCT','SOLUTION') NOT NULL,
+
+  category VARCHAR(100) NOT NULL,
+  subcategory VARCHAR(150) DEFAULT NULL,
+
+  pillar_code VARCHAR(50) NOT NULL,
+  pillar_name VARCHAR(150) NOT NULL,
+
+  item_code VARCHAR(255) NOT NULL,
+  item_name VARCHAR(255) NOT NULL,
+  description TEXT,
+
+  json_key VARCHAR(255) DEFAULT NULL,
+
+  max_score DECIMAL(6,2) NOT NULL DEFAULT 0,
+  min_required_score DECIMAL(6,2) DEFAULT 0,
+  awarded_score DECIMAL(6,2) DEFAULT 0,
+
+  critical_item BOOLEAN DEFAULT FALSE,
+  evidence_required BOOLEAN DEFAULT TRUE,
+
+  status ENUM(
+    'pending',
+    'in_review',
+    'completed',
+    'not_applicable'
+  ) DEFAULT 'pending',
+
+  observation TEXT,
+  risk_note TEXT,
+  recommendation TEXT,
+  evidence_ref TEXT,
+  comments TEXT,
+
+  assessor_updated_by INT DEFAULT NULL,
+  reviewer_updated_by INT DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_response_items_checklist
+    FOREIGN KEY (checklist_id) REFERENCES assessment_checklists(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_response_items_template
+    FOREIGN KEY (template_id) REFERENCES checklist_templates(id) ON DELETE SET NULL,
+
+  CONSTRAINT fk_response_items_assessor_user
+    FOREIGN KEY (assessor_updated_by) REFERENCES users(id) ON DELETE SET NULL,
+
+  CONSTRAINT fk_response_items_reviewer_user
+    FOREIGN KEY (reviewer_updated_by) REFERENCES users(id) ON DELETE SET NULL,
+
+  UNIQUE KEY uq_checklist_item (
+    checklist_id,
+    pillar_code,
+    item_code
+  )
+);
+`);
+
+    // ================= Assessment_pillar_scores =================
+
+    await db.query(`CREATE TABLE IF NOT EXISTS assessment_pillar_scores (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  checklist_id INT NOT NULL,
+
+  pillar_code VARCHAR(50) NOT NULL,
+  pillar_name VARCHAR(150) NOT NULL,
+
+  awarded_score DECIMAL(6,2) DEFAULT 0,
+  max_score DECIMAL(6,2) DEFAULT 0,
+  percentage_score DECIMAL(6,2) DEFAULT 0,
+
+  minimum_required_score DECIMAL(6,2) DEFAULT 0,
+  meets_minimum_rule BOOLEAN DEFAULT TRUE,
+
+  risk_level ENUM('LOW','MEDIUM','HIGH') DEFAULT NULL,
+  summary_note TEXT DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_pillar_scores_checklist
+    FOREIGN KEY (checklist_id) REFERENCES assessment_checklists(id) ON DELETE CASCADE,
+
+  UNIQUE KEY uq_checklist_pillar (
+    checklist_id,
+    pillar_code
+  )
+);
+`);
+
+    // ================= Assessment_reports =================
+
+    await db.query(`
+CREATE TABLE IF NOT EXISTS assessment_reports (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  checklist_id INT NOT NULL,
+
+  report_type ENUM(
+    'EVALUATION_REPORT',
+    'IMPROVEMENT_ADVISORY',
+    'CERTIFICATION_REPORT'
+  ) NOT NULL,
+
+  report_status ENUM(
+    'DRAFT',
+    'FINAL'
+  ) DEFAULT 'DRAFT',
+
+  strengths TEXT,
+  risks TEXT,
+  recommendations TEXT,
+  improvement_advisory TEXT,
+
+  generated_json JSON DEFAULT NULL,
+
+  generated_by INT DEFAULT NULL,
+  generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_assessment_reports_checklist
+    FOREIGN KEY (checklist_id) REFERENCES assessment_checklists(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_assessment_reports_user
+    FOREIGN KEY (generated_by) REFERENCES users(id) ON DELETE SET NULL
+);
+`);
+    // ================= Assessment_outcome_history  =================
+
+    await db.query(`CREATE TABLE IF NOT EXISTS assessment_outcome_history (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  checklist_id INT NOT NULL,
+
+  previous_status VARCHAR(100) DEFAULT NULL,
+  new_status VARCHAR(100) DEFAULT NULL,
+
+  previous_certification_status VARCHAR(100) DEFAULT NULL,
+  new_certification_status VARCHAR(100) DEFAULT NULL,
+
+  previous_certification_band VARCHAR(100) DEFAULT NULL,
+  new_certification_band VARCHAR(100) DEFAULT NULL,
+
+  remarks TEXT,
+  action_by INT DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_outcome_history_checklist
+    FOREIGN KEY (checklist_id) REFERENCES assessment_checklists(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_outcome_history_user
+    FOREIGN KEY (action_by) REFERENCES users(id) ON DELETE SET NULL
+);
+`);
+
+    // ================= CERTIFICATES =================
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS certificates (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  checklist_id INT NOT NULL,
+  application_id INT NOT NULL,
+  company_id INT NOT NULL,
+
+  certificate_name VARCHAR(255) NOT NULL,
+  certificate_id_code VARCHAR(100) NOT NULL UNIQUE,
+
+  certification_band VARCHAR(100) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  subcategory VARCHAR(150) DEFAULT NULL,
+
+  issue_date DATE NOT NULL,
+  valid_till DATE NOT NULL,
+
+  drive_file_id VARCHAR(255) DEFAULT NULL,
+  certificate_url TEXT DEFAULT NULL,
+  badge_url TEXT DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_certificates_checklist
+    FOREIGN KEY (checklist_id) REFERENCES assessment_checklists(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_certificates_application
+    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE,
+
+  CONSTRAINT fk_certificates_company
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+);
+    `);
+
+    // ================= ADMIN CREATION =================
+    const [superadmin] = await db.query(
+      "SELECT * FROM users WHERE role = 'SUPERADMIN'",
+    );
+
+    if (superadmin.length === 0) {
+      const bcrypt = (await import("bcryptjs")).default;
+
+      const password = process.env.SUPERADMIN_PASSWORD || "SuperAdmin@123";
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await db.query(
+        `INSERT INTO users 
    (username, email, password, role, is_verified, is_temp_password, is_active) 
    VALUES (?, ?, ?, ?, ?, ?, ?)`,
-  [
-    "superadmin",
-    "superadmin@cioverified.com",
-    hashedPassword,
-    "SUPERADMIN",
-    true,
-    false,  // ✅ no temp password
-    true
-  ]
-);
+        [
+          "superadmin",
+          "superadmin@cioverified.com",
+          hashedPassword,
+          "SUPERADMIN",
+          true,
+          false, // ✅ no temp password
+          true,
+        ],
+      );
 
-  console.log("✅ Super Admin created (superadmin@cioverified.com)");
-}
+      console.log("✅ Super Admin created (superadmin@cioverified.com)");
+    }
 
     console.log("✅ Database initialized successfully");
-
   } catch (error) {
     console.error("❌ DB Init Error:", error.message);
   }

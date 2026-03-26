@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/assessorApplications.css";
 
-function ReviewerApplications() {
+export default function ReviewerChecklists() {
   const [checklists, setChecklists] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -10,14 +10,11 @@ function ReviewerApplications() {
   useEffect(() => {
     const fetchChecklists = async () => {
       try {
-        const res = await fetch(
-          "http://localhost:5000/api/reviewer/checklists",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const res = await fetch("http://localhost:5000/api/reviewer/checklists", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
         const data = await res.json();
 
@@ -28,7 +25,7 @@ function ReviewerApplications() {
 
         setChecklists(data);
       } catch (err) {
-        console.error("Fetch reviewer checklists error:", err);
+        console.error(err);
         alert("Server error");
       } finally {
         setLoading(false);
@@ -38,24 +35,12 @@ function ReviewerApplications() {
     fetchChecklists();
   }, []);
 
-  const startReview = (checklistId) => {
-    navigate(`/assessor/review/${checklistId}`);
-  };
-
   if (loading) {
-    return (
-      <div className="application-loading">
-        Loading review queue...
-      </div>
-    );
+    return <div className="application-loading">Loading review queue...</div>;
   }
 
   if (!checklists.length) {
-    return (
-      <div className="application-empty">
-        No checklists assigned for review.
-      </div>
-    );
+    return <div className="application-empty">No checklists assigned for review.</div>;
   }
 
   return (
@@ -66,15 +51,13 @@ function ReviewerApplications() {
         <thead>
           <tr>
             <th>Checklist ID</th>
-            <th>Company Name</th>
-            <th>Entity Name</th>
+            <th>Company</th>
+            <th>Entity</th>
             <th>Category</th>
             <th>Status</th>
-            <th>Score %</th>
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody>
           {checklists.map((item) => (
             <tr key={item.checklist_id}>
@@ -83,13 +66,9 @@ function ReviewerApplications() {
               <td>{item.entity_name}</td>
               <td>{item.category}</td>
               <td>{item.status}</td>
-              <td>{item.percentage_score ?? "-"}</td>
-
               <td>
-                <button
-                  onClick={() => startReview(item.checklist_id)}
-                >
-                  Start Review
+                <button onClick={() => navigate(`/assessor/review/${item.checklist_id}`)}>
+                  Open Review
                 </button>
               </td>
             </tr>
@@ -99,5 +78,3 @@ function ReviewerApplications() {
     </div>
   );
 }
-
-export default ReviewerApplications;

@@ -12,6 +12,10 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 // import { authenticateUser } from "./middleware/authMiddleware.js";
 import assessorRoutes from "./routes/assessorRoutes.js";
 import assessorApprovalRoutes from "./routes/assessorApprovalRoutes.js";
+import auditorRoutes from "./routes/auditorRoutes.js";
+import reviewerRoutes from "./routes/reviewerRoutes.js";
+import checklistRoutes from "./routes/checklistRoutes.js";
+
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -32,6 +36,10 @@ app.use("/api", adminPermissionRoutes);
 app.use("/api/application", applicationRoutes);
 app.use("/api/assessor", assessorRoutes);
 app.use("/api", assessorApprovalRoutes);
+app.use("/api/auditor", auditorRoutes);
+app.use("/api/reviewer", reviewerRoutes);
+app.use("/api/checklists", checklistRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.send("CIO Verified API running");

@@ -1,0 +1,62 @@
+.application-container {
+  padding: 30px;
+  min-height: 100vh;
+  background: #f4f7fb;
+}
+
+.application-container h2 {
+  font-size: 28px;
+  color: #1e293b;
+  margin-bottom: 20px;
+}
+
+.application-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.application-table thead {
+  background: #1d4ed8;
+  color: white;
+}
+
+.application-table th,
+.application-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.application-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.application-table button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.application-table button:hover {
+  background: #1e40af;
+}
+
+.application-empty,
+.application-loading {
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  color: #475569;
+  text-align: center;
+  margin-top: 20px;
+}

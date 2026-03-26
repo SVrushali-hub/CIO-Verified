@@ -902,62 +902,63 @@ maxLength={12}
 
             {/* ================= DROPDOWN DATA ================= */}
             {(() => {
-              const productCategories = [
-                "ERP",
-                "CRM",
-                "HRMS",
-                "Finance",
-                "AI",
-                "Security",
-                "Other",
-              ];
-              const industries = [
-                "Finance",
-                "Healthcare",
-                "Retail",
-                "Manufacturing",
-                "Education",
-                "Government",
-                "Other",
-              ];
-              const deploymentTypes = [
-                "Cloud",
-                "On-Premise",
-                "Hybrid",
-                "Other",
-              ];
-              const pricingModels = [
-                "Subscription",
-                "One-time",
-                "Usage-based",
-                "Freemium",
-                "Other",
-              ];
+  const productCategories = [
+    "ERP",
+    "CRM",
+    "HRMS",
+    "Accounting",
+    "Operational SaaS",
+    "Integration / Data",
+    "AI",
+    "Security",
+    "Vertical Software",
+  ];
 
-              const solutionCategories = [
-                "Implementation",
-                "Integration",
-                "Consulting",
-                "MSP",
-                "Audit",
-                "Other",
-              ];
-              const methodologies = [
-                "Agile",
-                "Waterfall",
-                "ITIL",
-                "DevOps",
-                "Hybrid",
-                "Other",
-              ];
-              const servicesList = [
-                "ERP Implementation",
-                "CRM Implementation",
-                "Cloud Migration",
-                "Security Audit",
-                "Support Services",
-                "Other",
-              ];
+  const industries = [
+    "Finance",
+    "Healthcare",
+    "Retail",
+    "Manufacturing",
+    "Education",
+    "Government",
+  ];
+
+  const deploymentTypes = [
+    "Cloud",
+    "On-Premise",
+    "Hybrid",
+  ];
+
+  const pricingModels = [
+    "Subscription",
+    "One-time",
+    "Usage-based",
+    "Freemium",
+  ];
+
+  const solutionCategories = [
+    "Implementation Partner",
+    "System Integrator",
+    "Managed Services",
+    "ITES",
+    "ISO / Compliance Auditor",
+  ];
+
+  const methodologies = [
+    "Agile",
+    "Waterfall",
+    "ITIL",
+    "DevOps",
+    "Hybrid",
+  ];
+
+  const servicesList = [
+    "ERP Implementation",
+    "CRM Implementation",
+    "Cloud Migration",
+    "Security Audit",
+    "Support Services",
+  ];
 
               return (
                 <>
@@ -982,14 +983,7 @@ maxLength={12}
                           <option key={i}>{c}</option>
                         ))}
                       </select>
-                      {productForm.category === "Other" && (
-                        <input
-                          name="customCategory"
-                          placeholder="Enter Category"
-                          value={productForm.customCategory}
-                          onChange={handleProductChange}
-                        />
-                      )}
+                      
                       <textarea
                         name="description"
                         placeholder="Description"
@@ -1006,14 +1000,7 @@ maxLength={12}
                           <option key={idx}>{i}</option>
                         ))}
                       </select>
-                      {productForm.industryServed === "Other" && (
-                        <input
-                          name="customIndustry"
-                          placeholder="Enter Industry"
-                          value={productForm.customIndustry}
-                          onChange={handleProductChange}
-                        />
-                      )}
+                     
                       <input
                         name="teamSize"
                         placeholder="Team Size"
@@ -1036,14 +1023,7 @@ maxLength={12}
                           <option key={i}>{d}</option>
                         ))}
                       </select>
-                      {productForm.deploymentType === "Other" && (
-                        <input
-                          name="customDeployment"
-                          placeholder="Enter Deployment"
-                          value={productForm.customDeployment}
-                          onChange={handleProductChange}
-                        />
-                      )}
+                     
                       <select
                         name="pricingModel"
                         value={productForm.pricingModel}
@@ -1054,14 +1034,7 @@ maxLength={12}
                           <option key={i}>{p}</option>
                         ))}
                       </select>
-                      {productForm.pricingModel === "Other" && (
-                        <input
-                          name="customPricing"
-                          placeholder="Enter Pricing"
-                          value={productForm.customPricing}
-                          onChange={handleProductChange}
-                        />
-                      )}
+                    
                       <input
                         name="customersCount"
                         placeholder="Customers Count"
@@ -1213,14 +1186,7 @@ onChange={handleProductChange}
                         ))}
                       </select>
 
-                      {solutionForm.category === "Other" && (
-                        <input
-                          name="customCategory"
-                          placeholder="Enter Category"
-                          value={solutionForm.customCategory}
-                          onChange={handleSolutionChange}
-                        />
-                      )}
+                      
 
                       <textarea
                         name="description"
@@ -1240,14 +1206,7 @@ onChange={handleProductChange}
                         ))}
                       </select>
 
-                      {solutionForm.industryServed === "Other" && (
-                        <input
-                          name="customIndustry"
-                          placeholder="Enter Industry"
-                          value={solutionForm.customIndustry}
-                          onChange={handleSolutionChange}
-                        />
-                      )}
+                      
 
                       <input
                         name="teamSize"
@@ -1267,15 +1226,7 @@ onChange={handleProductChange}
                         ))}
                       </select>
 
-                      {solutionForm.servicesProvided === "Other" && (
-                        <input
-                          name="customService"
-                          placeholder="Enter Service"
-                          value={solutionForm.customService}
-                          onChange={handleSolutionChange}
-                        />
-                      )}
-
+                    
                       <input
                         name="projectsCompleted"
                         placeholder="Projects Completed"
@@ -1329,14 +1280,7 @@ onChange={handleProductChange}
                         ))}
                       </select>
 
-                      {solutionForm.methodology === "Other" && (
-                        <input
-                          name="customMethodology"
-                          placeholder="Enter Methodology"
-                          value={solutionForm.customMethodology}
-                          onChange={handleSolutionChange}
-                        />
-                      )}
+                    
 
                       <input
                         name="certifications"

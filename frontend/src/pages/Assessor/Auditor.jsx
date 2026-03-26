@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../../styles/assessorApplications.css";
 
 function AuditorApplications() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -32,17 +35,46 @@ function AuditorApplications() {
     fetchApplications();
   }, []);
 
-  const startReview = (applicationId) => {
-    // Navigate to the review page or open modal
-    alert(`Start review for application: ${applicationId}`);
-  };
+  const handleStartAudit = async (applicationId) => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/auditor/application/${applicationId}/start-audit`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
-  if (loading) return <div>Loading applications...</div>;
-  if (!applications.length) return <div>No applications allocated.</div>;
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to start audit");
+      return;
+    }
+
+    console.log("Audit data:", data);
+
+    // later you can navigate to checklist page
+    navigate(`/assessor/audit/${applicationId}`, { state: data });
+  } catch (err) {
+    console.error("Start audit error:", err);
+    alert("Server error");
+  }
+};
+
+  if (loading) {
+    return <div className="application-loading">Loading applications...</div>;
+  }
+
+  if (!applications.length) {
+    return <div className="application-empty">No applications allocated.</div>;
+  }
 
   return (
     <div className="application-container">
       <h2>Applications Allocated to You (Auditor)</h2>
+
       <table className="application-table">
         <thead>
           <tr>
@@ -52,18 +84,19 @@ function AuditorApplications() {
           </tr>
         </thead>
         <tbody>
-          {applications.map((app) => (
-            <tr key={app.applicationId}>
-              <td>{app.applicationId}</td>
-              <td>{app.companyName}</td>
-              <td>
-                <button onClick={() => startReview(app.applicationId)}>
-                  Start Review
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+         
+        {applications.map((app) => (
+  <tr key={app.application_id}>
+    <td>{app.application_id}</td>
+    <td>{app.company_name}</td>
+    <td>
+      <button onClick={() => handleStartAudit(app.application_id)}>
+        Start Audit
+      </button>
+    </td>
+  </tr>
+))}
+          </tbody>
       </table>
     </div>
   );
